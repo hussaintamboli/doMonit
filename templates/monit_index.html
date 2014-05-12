@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}DoMonit Home{% endblock %}
+{% block head %}
+  {{ super() }}
+  <style type="text/css">
+  table, th, td {
+    border: solid black 1px;
+    border-collapse: collapse;
+  }
+  </style>
+{% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+
+<table class="table table-bordered">
+<caption><h2>Monitoring using psutil served by flask</h2></caption>
+<tr class="well well-sm"><th>Title</th><th>Description</th><th>Action</th></tr>
+<tr><td>Login</td><td>Login to this site. Hint: correct pass = 123</td><td>{% include 'login.html' %}</td></tr>
+<tr><td>User's home</td><td>home page of the logged in user</td><td><a href="/home">home</a></td></tr>
+<tr><td>Logout</td><td>Logout user</td><td><a href="/logout">logout</a></td></tr>
+</table>
+
+{% endblock %}

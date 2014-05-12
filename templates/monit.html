@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Moniter{% endblock %}
+{% block head %}
+  {{ super() }}
+  <style type="text/css">
+
+  </style>
+{% endblock %}
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+
+{% include 'header.html' %}
+
+<div><span>{{ data.users }}  users</span></div>
+<div>
+<table class="table table-bordered">
+<caption class="text-left">total {{ data.num_proc }} processes</caption>
+<tr class="well well-sm">
+<th>PID</th>
+<th>User</th>
+<th>Created at</th>
+<th>CPU</th>
+<th>Command</th>
+</tr>
+
+{% for process in data.proc %}
+<tr>
+<td> {{ process[0] }} </td>
+<td> {{ process[1] }} </td>
+<td> {{ process[2] }} </td>
+<td> {{ process[3] }} </td>
+<td> {{ process[4] }} </td>
+</tr>
+{% endfor %}
+
+</table>
+{% endblock %}

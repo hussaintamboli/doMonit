@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+{% for message in get_flashed_messages() %}
+<div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+{% if error %}
+<div class="alert alert-danger">Error: {{ error }}!</div>
+{% endif %}
+<div class="row text-center" style="margin: 10px 0px">
+<form method='POST' action='/login'>
+<div><label> username: </label> <input type='text' name='username' /></div>
+<div><label> password: </label> <input type='password' name='password' /></div>
+<div><input type='submit' value='login' /></div>
+</form>
+</div>
+{% endblock %}
