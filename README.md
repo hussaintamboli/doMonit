@@ -1,4 +1,12 @@
 doMonit
 =======
 
-As of now it is just a prototype written in Python. It is an attempt towards making a Server Monitoring Tool using Flask and Psutil. 
+$ cd doMonit
+$ ls
+monit.py  static  templates
+$ python monit.py 
+ * Running on http://127.0.0.1:1111/
+ * Restarting with reloader
+
+# then open http://127.0.0.1:1111/
+# valid password = 123
