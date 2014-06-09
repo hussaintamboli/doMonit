@@ -32,8 +32,11 @@ def monit():
         return redirect(url_for('login'))
     users = len(psutil.users())
     mysql_running = psutil.pid_exists(18685)
+    boottime = psutil.BOOT_TIME
+    uptime = datetime.fromtimestamp(boottime).strftime("%Y-%m-%d %H:%M:%S")
     data = {
         'users' : users,
+	'uptime' : uptime
     }
     proc_list = []
     for proc in psutil.process_iter():

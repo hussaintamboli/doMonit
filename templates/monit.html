@@ -14,16 +14,19 @@
 
 {% include 'header.html' %}
 
-<div><span>{{ data.users }}  users</span></div>
+<div>
+<span class="col-md-3 col-sm-6 col-xs-12">{{ data.users }}  users</span>
+<span class="col-md-3 col-sm-6 col-xs-12">{{ data.uptime }} uptime</span>
+</div>
 <div>
 <table class="table table-bordered">
-<caption class="text-left">total {{ data.num_proc }} processes</caption>
+<caption>total {{ data.num_proc }} processes</caption>
 <tr class="well well-sm">
-<th>PID</th>
-<th>User</th>
-<th>Created at</th>
-<th>CPU</th>
-<th>Command</th>
+<th class="col-md-1">PID</th>
+<th class="col-md-1">User</th>
+<th class="col-md-2">Created at</th>
+<th class="col-md-1">CPU</th>
+<th class="col-md-7">Command</th>
 </tr>
 
 {% for process in data.proc %}
