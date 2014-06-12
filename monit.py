@@ -5,8 +5,10 @@ from flask import make_response
 from flask import redirect, url_for
 from flask import session
 from flask import flash
+from flask import Response
 
 from datetime import datetime
+import time
 import psutil
 
 app = Flask(__name__)
@@ -81,6 +83,14 @@ def logout():
     flash('Your were logged out')
     return redirect(url_for('monit'))
 
+@app.route('/sse-demo')
+def sse():
+    def g():
+        for i, c in enumerate("hello"*10):
+            time.sleep(.1)  # an artificial delay
+            yield i, c
+    return Response(stream_template('sse_demo.html', data=g()))
+
 # customizing the error 404 page. 
 # Use errorhandler() decorator
 @app.errorhandler(404)
@@ -101,6 +111,16 @@ def log_the_user_in(username):
     flash('Welcome! You just logged in')
     app.logger.debug("%s user logged in", username)
     return redirect(url_for('monit'))
+
+def stream_template(template_name, **context):
+    # http://flask.pocoo.org/docs/patterns/streaming/#streaming-from-templates
+    app.update_template_context(context)
+    t = app.jinja_env.get_template(template_name)
+    rv = t.stream(context)
+    # uncomment if you don't need immediate reaction
+    ##rv.enable_buffering(5)
+    return rv
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=1111)
