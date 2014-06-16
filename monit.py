@@ -10,6 +10,7 @@ from flask import Response
 from datetime import datetime
 import time
 import psutil
+import re
 
 app = Flask(__name__)
 app.secret_key = '\xb4\x9e\x9e\xd07\x17\xfe\xe1\xf6n\xe0\xf4\x87\x08\xc2\xc4k\xbb\xb2ru\xac{>'
@@ -34,11 +35,12 @@ def monit():
         return redirect(url_for('login'))
     users = len(psutil.users())
     mysql_running = psutil.pid_exists(18685)
-    boottime = psutil.BOOT_TIME
+    boottime, num_cpus = psutil.BOOT_TIME, psutil.NUM_CPUS
     uptime = datetime.fromtimestamp(boottime).strftime("%Y-%m-%d %H:%M:%S")
     data = {
         'users' : users,
-	'uptime' : uptime
+	'uptime' : uptime,
+	'num_cpus' : num_cpus
     }
     proc_list = []
     for proc in psutil.process_iter():
@@ -91,6 +93,18 @@ def sse():
             yield i, c
     return Response(stream_template('sse_demo.html', data=g()))
 
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    error = None
+    if 'search_text' in request.form:
+        searched = request.form['search_text']
+        app.logger.debug("Searching %s ..." % searched)
+        if searched:
+	    return proc(searched)
+        else:
+	    error = 'Invalid params. Valid param: search_text'
+    return render_template('search.html', error=error)
+     
 # customizing the error 404 page. 
 # Use errorhandler() decorator
 @app.errorhandler(404)
@@ -111,6 +125,22 @@ def log_the_user_in(username):
     flash('Welcome! You just logged in')
     app.logger.debug("%s user logged in", username)
     return redirect(url_for('monit'))
+
+def proc(data):
+    # search for pid, process_name, user etc. 
+    # find pids and show process details
+    proc_list = []
+    flash('Search results for "%s"' % data)
+    for proc in psutil.process_iter():
+        pid, username, create_time, cpu_percent, cmdline = proc.pid, proc.username(), datetime.fromtimestamp(proc.create_time()).strftime("%Y-%m-%d %H:%M:%S"), proc.cpu_percent(), proc.cmdline()
+        data = data.lower()
+        if (data == str(pid) or data in [str(i).lower() for i in cmdline] or data in str(username).lower()) and cmdline:
+            proc_list.append([pid, username, create_time, cpu_percent, cmdline])
+    data = {}
+    if proc_list:
+        data['proc'] = proc_list
+        data['num_proc'] = len(proc_list)
+    return render_template('monit.html', data=data)
 
 def stream_template(template_name, **context):
     # http://flask.pocoo.org/docs/patterns/streaming/#streaming-from-templates
