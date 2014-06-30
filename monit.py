@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+import sys
 from flask import Flask
 from flask import request
 from flask import render_template
@@ -25,7 +27,6 @@ def test():
     return render_template('monit_index.html')
 
 @app.route('/monit')
-@app.route('/monit/.*')
 def monit():
     try:
         username = session['username']
@@ -50,17 +51,6 @@ def monit():
     data['proc'] = proc_list 
     data['num_proc'] = len(proc_list) 
     return render_template('monit.html', data=data)    
-
-@app.route('/home')
-def home():
-    # user's home page
-    try:
-        username = session['username'] 
-    except KeyError, ke:
-        username = None
-    if username is None:
-    	return redirect(url_for('login'))
-    return render_template('home.html', username=username)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -89,7 +79,7 @@ def logout():
 def sse():
     def g():
         for i, c in enumerate("hello"*10):
-            time.sleep(.1)  # an artificial delay
+            time.sleep(.5)  # an artificial delay
             yield i, c
     return Response(stream_template('sse_demo.html', data=g()))
 
@@ -122,7 +112,7 @@ def log_the_user_in(username):
     # sample: after login action
     session['username'] = username
     session['logged_in'] = True
-    flash('Welcome! You just logged in')
+    flash('Welcome %s! You just logged in' % username)
     app.logger.debug("%s user logged in", username)
     return redirect(url_for('monit'))
 
@@ -153,7 +143,10 @@ def stream_template(template_name, **context):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=1111)
+    if len(sys.argv) == 2 and sys.argv[1] == 'debug':    
+        app.run(debug=True, port=1111)
+    else:
+        app.run(port=1111)
     # with debug=True, 
     # we don't have to run this module again after each change to reflect on web
 
